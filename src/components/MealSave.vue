@@ -1,163 +1,220 @@
 <template>
-    <div class="min-h-screen bg-gray-50">
+  <div>
+    <!-- Home Page -->
+    <div v-if="currentRoute === 'home'" class="main-container">
       <!-- Top Navigation -->
-      <header class="px-4 py-3 bg-white">
-        <div class="flex items-center justify-between">
-          <h1 class="text-3xl font-angelos text-black tracking-wide transform -rotate-2">
-            MealSave
-          </h1>
-          <div class="flex items-center gap-4">
-            <Bell class="w-6 h-6 text-gray-700" />
-            <UserCircle class="w-6 h-6 text-gray-700" />
+      <header class="header">
+        <div class="header-content">
+          <h1 class="heading">MealSave</h1>
+          <div class="icon-group">
+            <div class="notification-wrapper">
+              <Bell class="icon" @click="toggleNotifications" />
+              <span v-if="unreadNotificationsCount > 0" class="notification-badge">
+                {{ unreadNotificationsCount }}
+              </span>
+              <NotificationsPanel 
+                :isVisible="showNotifications" 
+                @notification-clicked="handleNotificationClick"
+              />
+            </div>
+            <UserCircle class="icon" />
           </div>
         </div>
-        
+
         <!-- Search Bar -->
-        <div class="relative mt-3">
-          <Search class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
-          <input 
-            type="text" 
-            placeholder="Search here" 
-            class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-green-500"
-          />
-          <button class="absolute right-3 top-2">
-            <SlidersHorizontal class="w-5 h-5 text-green-600" />
+        <div class="search-bar-container">
+          <Search class="search-icon" />
+          <input type="text" placeholder="Search here" class="search-bar" />
+          <button class="search-button">
+            <SlidersHorizontal class="search-settings-icon" />
           </button>
         </div>
       </header>
-  
-      <!-- Rest of the content remains the same -->
-      <main class="px-4 py-3">
+
+      <!-- Main Content -->
+      <main class="main-content">
         <!-- Donation Banner -->
-        <div class="bg-green-600 text-white rounded-xl p-4 mb-6">
-          <h3 class="text-lg font-medium">Have food at Home to Donate?</h3>
-          <p class="text-sm opacity-90 mb-2">Be first in your neighbourhood</p>
-          <button class="bg-white text-green-600 px-4 py-1 rounded-full text-sm font-medium">
-            Donate
-          </button>
+        <div class="donation-banner">
+          <h3 class="donation-heading">Have food at Home to Donate?</h3>
+          <p class="donation-description">Be first in your neighbourhood</p>
+          <button class="donate-button">Donate</button>
         </div>
-  
-        <!-- Carousel Indicators -->
-        <div class="flex justify-center gap-1 mb-6">
-          <div class="w-2 h-2 rounded-full bg-green-600"></div>
-          <div class="w-2 h-2 rounded-full bg-gray-300"></div>
-        </div>
-  
-        <!-- Categories -->
-        <section class="mb-6">
-          <h3 class="text-lg font-medium mb-4">Categories</h3>
-          <div class="flex justify-between">
-            <div v-for="category in categories" :key="category.name" class="text-center">
-              <div class="w-16 h-16 rounded-full overflow-hidden mb-2">
-                <img :src="category.image" :alt="category.name" class="w-full h-full object-cover" />
-              </div>
-              <span class="text-sm">{{ category.name }}</span>
+
+        <!-- Categories Section -->
+        <section class="categories-section">
+          <h3 class="section-heading">Categories</h3>
+          <div class="categories-list">
+            <div v-for="category in categories" :key="category.name" class="category-item">
+              <img :src="category.image" :alt="category.name" class="category-img" />
+              <span class="category-name">{{ category.name }}</span>
             </div>
           </div>
         </section>
-  
-        <!-- Recommended Section -->
-        <section class="mb-6">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-medium">Recommended for you</h3>
-            <a href="#" class="text-green-600 text-sm">See all</a>
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div v-for="item in recommendedItems" :key="item.id" class="bg-white rounded-xl overflow-hidden shadow-sm">
-              <img :src="item.image" :alt="item.title" class="w-full h-32 object-cover" />
-              <div class="p-3">
-                <h4 class="font-medium">{{ item.title }}</h4>
-                <p class="text-sm text-gray-500">{{ item.time }}</p>
-                <div class="flex justify-between items-center mt-2">
-                  <span class="text-green-600 font-medium">{{ item.price }}</span>
-                  <div class="flex items-center gap-1">
-                    <Star class="w-4 h-4 text-yellow-400 fill-current" />
-                    <span class="text-sm">{{ item.rating }}</span>
+
+        <!-- Open Restaurants -->
+        <section class="open-restaurants-section">
+          <h3 class="section-heading">Open Restaurants</h3>
+          <div class="restaurant-list">
+            <div class="restaurant-card" @click="navigateToRestaurant('1')" style="cursor: pointer">
+              <img :src="restaurantImage" alt="Restaurant" class="restaurant-image" />
+              <div class="restaurant-details">
+                <h4 class="restaurant-name">Rose Garden Restaurant</h4>
+                <p class="restaurant-categories">Burger - Chicken - Rice - Wings</p>
+                <div class="restaurant-info">
+                  <div class="rating">
+                    <Star class="star-icon filled" />
+                    <span>4.7</span>
+                  </div>
+                  <div class="delivery-info">
+                    <Truck class="delivery-icon" />
+                    <span>Free</span>
+                  </div>
+                  <div class="time-info">
+                    <Clock class="time-icon" />
+                    <span>20 min</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
-  
+
         <!-- Bottom Navigation -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t px-6 py-3">
-          <div class="flex justify-between items-center">
-            <a href="#" class="flex flex-col items-center text-green-600">
-              <Home class="w-6 h-6" />
-              <span class="text-xs mt-1">Home</span>
+        <nav class="bottom-nav">
+          <div class="bottom-nav-items">
+            <a href="#" class="nav-item active">
+              <Home class="nav-icon" />
+              <span class="nav-text">Home</span>
             </a>
-            <a href="#" class="flex flex-col items-center text-gray-400">
-              <Map class="w-6 h-6" />
-              <span class="text-xs mt-1">Map</span>
+            <a href="#" class="nav-item" @click.prevent="navigateToBlog">
+              <FileText class="nav-icon" />
+              <span class="nav-text">Blog</span>
             </a>
-            <a href="#" class="flex flex-col items-center text-gray-400">
-              <User class="w-6 h-6" />
-              <span class="text-xs mt-1">Profile</span>
+            <a href="#" class="nav-item">
+              <User class="nav-icon" />
+              <span class="nav-text">Profile</span>
             </a>
-            <a href="#" class="flex flex-col items-center text-gray-400">
-              <Menu class="w-6 h-6" />
-              <span class="text-xs mt-1">Menu</span>
+            <a href="#" class="nav-item">
+              <Menu class="nav-icon" />
+              <span class="nav-text">Menu</span>
             </a>
           </div>
         </nav>
       </main>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue'
-  import { 
-    Bell, 
-    UserCircle, 
-    Search, 
-    SlidersHorizontal,
-    Star,
-    Home,
-    Map,
-    User,
-    Menu
-  } from 'lucide-vue-next'
-  
-  const categories = ref([
-    { name: 'Restaurant', image: '/placeholder.svg?height=64&width=64' },
-    { name: 'Cafe', image: '/placeholder.svg?height=64&width=64' },
-    { name: 'Bakery', image: '/placeholder.svg?height=64&width=64' },
-    { name: 'Groceries', image: '/placeholder.svg?height=64&width=64' }
-  ])
-  
-  const recommendedItems = ref([
-    {
-      id: 1,
-      title: 'Surprise Bag',
-      time: 'Collect tomorrow: 12:50 AM - 01:55 AM',
-      price: '4.99$',
-      rating: '4.8',
-      image: '/placeholder.svg?height=128&width=256'
-    },
-    {
-      id: 2,
-      title: 'Surprise Bag',
-      time: 'Collect tomorrow: 12:50 AM - 01:55 AM',
-      price: '4.99$',
-      rating: '4.8',
-      image: '/placeholder.svg?height=128&width=256'
-    }
-  ])
-  </script>
-  
-  <style>
-  @font-face {
-    font-family: 'Angelos';
-    src: url('./Angelos.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
+
+    <!-- Restaurant Page -->
+    <div v-else-if="currentRoute === 'restaurant'">
+      <Restaurant :restaurantId="currentRestaurantId" @navigate="handleNavigation" />
+    </div>
+
+    <!-- Blog Page -->
+    <div v-else-if="currentRoute === 'blog'">
+      <Blog @navigate="handleNavigation" />
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onBeforeUnmount } from 'vue';
+import {
+  Bell,
+  UserCircle,
+  Search,
+  SlidersHorizontal,
+  Star,
+  Home,
+  User,
+  Menu,
+  ChevronRight,
+  Flame,
+  Truck,
+  Clock,
+  FileText
+} from 'lucide-vue-next';
+import Restaurant from './Restaurant.vue';
+import Blog from './Blog.vue';
+import NotificationsPanel from './Notifications.vue';
+
+// Assets
+import logo from '../assets/logo.png';
+
+// Reactive State
+const currentRoute = ref('home');
+const currentRestaurantId = ref(null);
+const showNotifications = ref(false);
+const unreadNotificationsCount = ref(2);
+
+// Categories
+const categories = ref([
+  { name: 'Restaurant', image: logo },
+  { name: 'Cafe', image: logo },
+  { name: 'Bakery', image: logo },
+  { name: 'Groceries', image: logo }
+]);
+
+// Placeholder for restaurant image
+const restaurantImage = ref('/path/to/restaurant-image.jpg');
+
+// Navigation Functions
+const navigateToRestaurant = (restaurantId) => {
+  console.log('Navigating to restaurant:', restaurantId);
+  currentRestaurantId.value = restaurantId;
+  currentRoute.value = 'restaurant';
+};
+
+const navigateToBlog = () => {
+  console.log('Navigating to blog');
+  currentRoute.value = 'blog';
+};
+
+const handleNavigation = (route, restaurantId = null) => {
+  console.log('Handling navigation to:', route);
+  currentRoute.value = route;
+  if (restaurantId) {
+    currentRestaurantId.value = restaurantId;
   }
-  
-  .font-angelos {
-    font-family: 'Angelos', cursive;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+};
+
+// Notification Functions
+const toggleNotifications = () => {
+  showNotifications.value = !showNotifications.value;
+
+  if (showNotifications.value) {
+    document.addEventListener('click', closeNotificationsOnClickOutside);
+  } else {
+    document.removeEventListener('click', closeNotificationsOnClickOutside);
   }
-  </style>
+};
+
+const closeNotificationsOnClickOutside = (event) => {
+  const notificationPanel = document.querySelector('.notifications-panel');
+  const bellIcon = document.querySelector('.notification-wrapper .icon');
+
+  if (
+    notificationPanel &&
+    !notificationPanel.contains(event.target) &&
+    event.target !== bellIcon
+  ) {
+    showNotifications.value = false;
+    document.removeEventListener('click', closeNotificationsOnClickOutside);
+  }
+};
+
+const handleNotificationClick = (notification) => {
+  console.log('Notification clicked:', notification);
+
+  if (notification.title === 'Delivery Order') {
+    // currentRoute.value = 'order-tracking';
+  } else if (notification.title === 'Welcome on Forre') {
+    // currentRoute.value = 'welcome';
+  }
+
+  showNotifications.value = false;
+};
+
+// Cleanup event listener when component unmounts
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeNotificationsOnClickOutside);
+});
+</script>

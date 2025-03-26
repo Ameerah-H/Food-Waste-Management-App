@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "serve": "vite preview"
-},
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "build:tailwind": "tailwindcss -i ./src/tailwind.css -o ./dist/tailwind.css",
+    "watch:tailwind": "tailwindcss -i ./src/tailwind.css -o ./dist/tailwind.css --watch"
+  },
   "dependencies": {
     "core-js": "^3.8.3",
     "lucide-vue-next": "^0.483.0",
-    "tailwindcss": "^4.0.14",
     "vue": "^3.2.13"
   },
   "devDependencies": {
@@ -23,6 +24,7 @@
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "postcss": "^8.5.3",
+    "tailwindcss": "^4.0.14",
     "vite": "^6.2.2"
   },
   "eslintConfig": {
